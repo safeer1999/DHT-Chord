@@ -7,6 +7,7 @@ class Node :
 		self.pred = []
 		self.next = None
 		self.route_table = []
+		self.data = []
 
 
 class List:
@@ -60,6 +61,22 @@ class List:
 		temp.next = temp.next.next
 		return popped
 
+	def search(self,key) :
+		temp = self.head
+
+		found = None
+
+		while temp != self.end :
+			if temp.key == key :
+				found = temp
+				break
+			temp = temp.next
+
+		if key == self.end.key :
+			found = self.end
+
+		return found
+
 
 
 
@@ -93,14 +110,18 @@ class Chord :
 		self.ring_list = List(self.max_nodes)
 
 		for i in range(num_nodes) :
-			key = self.gen_key()
-			newNode = Node(key)
-
-			self.insert_node(newNode)
+			self.insert_node(self.create_node())
 
 		print("Ring created!!!\n")
 
 		#self.ring_list.disp_ring()
+
+	def create_node(self):
+		key = self.gen_key()
+		addr = input('Address of node: ')
+		newNode = Node(key,addr)
+		return newNode
+
 
 	def update_pred(self,node):
 
@@ -148,7 +169,7 @@ class Chord :
 		self.update_pred(node)
 		self.build_route()
 		self.net_nodes+=1
-		#print("insert",node.key,self.net_nodes)	
+		print("inserted with key:",node.key)	
 
 	def remove_node(self,key) :
 		popped=self.ring_list.remove(key)
@@ -188,7 +209,76 @@ class Chord :
 			return node
 
 		else :
-			return self.search(node.route_table[0],key)
+			i=0
+			while (2**(i+1)) <= key :
+				i+=1
+
+			return self.search(node.route_table[i],key)
+
+	def hash_key(self,string):
+		return sum(list(map(ord,[i for i in string])))%self.max_nodes
+
+
+def menu():
+	print("------------------------MENU-------------------------")
+	print("1.Insert a node")
+	print("2.Remove a node")
+	print("3.Use a node")
+	print("4.Exit")
+	option = int(input("Enter choice:"))
+	return option
+
+def UI(DHT):
+	print("-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
+	print()
+	print("Begin by specifying number of nodes the P2P network should have intitially")
+	num_init = int(input('Enter number of nodes: '))
+
+	DHT.init_ring(num_init)
+	while(True) :
+		option=menu()
+
+		if option == 1 :
+			newNode = DHT.create_node()
+			DHT.insert_node(newNode)
+
+		elif option == 2 :
+			key = int(input("Enter node to be removed"))
+			DHT.remove_node()
+			print("Node removed")
+
+		elif option == 3 :
+			key = int(input("Enter node to be used: "))
+			used_node = DHT.ring_list.search(key)
+			print("\nOptions:\n1.Search for data\n2.Insert Data\n")
+			choice = int(input("Enter choice: "))
+
+			if choice == 1 :
+				search_file = input("Enter file name:")
+				search_key = DHT.hash_key(search_file)
+
+				node = DHT.search(used_node,search_key)
+				if search_file in node.data :
+					print("Found file in node ",node.address)
+
+				else :
+					print("File not found")
+
+			elif choice == 2 :
+				filename = input("Enter filename: ")
+				ins_key = DHT.hash_key(filename)
+				print("file_key",ins_key)
+				ins_node = DHT.search(used_node,ins_key)
+				ins_node.data.append(filename)
+				print("file inserted at node: ",ins_node.address)
+
+
+		else :
+			exit()
+
+
+
+
 
 
 
@@ -196,20 +286,13 @@ class Chord :
 
 def main():
 	DHT = Chord()
-	DHT.init_ring(3)
-	DHT.insert_node(Node(DHT.gen_key()))
-	DHT.ring_list.disp_ring()
-	print("\nAfter removal")
-	popped=DHT.remove_node(DHT.ring_list.head.next.next.next.key)
-	print("popped: ",popped.key)
-	DHT.ring_list.disp_ring()
-	print("\n")
+	UI(DHT)
+	# DHT.init_ring(3)
+	# print()
+	# DHT.ring_list.disp_ring()
+	# print()
 
-	rand_key = int(random.random()*16)
-	print("searching for ",rand_key)
-	loc = DHT.find_route(DHT.ring_list.head,rand_key)
-	print("found in node: ",loc.key)
-
+	# print(DHT.ring_list.search(int(input())).key)
 
 
 if __name__ == '__main__':
