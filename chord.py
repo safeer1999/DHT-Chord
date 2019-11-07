@@ -300,10 +300,10 @@ def UI(DHT):
 			elif choice == 2 :
 				filename = input("Enter filename: ")
 				ins_key = DHT.hash_key(filename)
-				print("file_key",ins_key)
+				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
 				ins_node.data.append(filename)
-				print("file inserted at node: ",ins_node.address)
+				print("File inserted at node: ",ins_node.address)
 
 
 		else :
