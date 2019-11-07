@@ -273,13 +273,16 @@ def UI(DHT):
 			DHT.insert_node(newNode)
 
 		elif option == 2 :
-			key = int(input("Enter node to be removed"))
+			key = int(input("Enter node to be removed: "))
 			DHT.remove_node()
-			print("Node removed")
+			print("Node removed!")
 
 		elif option == 3 :
 			key = int(input("Enter node to be used: "))
 			used_node = DHT.ring_list.search(key)
+			if used_node==None:
+				print("Node not found!")
+				continue
 			print("\nOptions:\n1.Search for data\n2.Insert Data\n")
 			choice = int(input("Enter choice: "))
 
