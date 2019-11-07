@@ -106,6 +106,7 @@ class Chord :
 
 
 	def init_ring(self,num_nodes = 2):
+
 		
 		self.ring_list = List(self.max_nodes)
 
