@@ -112,7 +112,7 @@ class Chord :
 		for i in range(num_nodes) :
 			self.insert_node(self.create_node())
 
-		print("Ring created!!!\n")
+		print("Ring created!\n")
 
 		#self.ring_list.disp_ring()
 
