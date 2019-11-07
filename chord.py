@@ -1,4 +1,7 @@
 import random
+import pandas as pd
+
+users_df = pd.read_csv("users.csv", index_col=False)
 
 class Node :
 	def __init__(self,key,address=None):
@@ -229,9 +232,36 @@ def menu():
 	option = int(input("Enter choice:"))
 	return option
 
+def registration():
+	print("Please enter details:\n")
+	username=input("Username: ")
+	global users_df
+	if username in list(users_df['user']):
+		print("Welcome back", username,"\n")
+		password=input("Password: ")
+		while password != str(users_df[users_df['user']==username]['pass'].values[0]):
+			print("Incorrect password, re-enter\n")
+			password=input("Password: ")
+		else:
+			print("Success!\n")
+	else:
+		print("New user detected, register now")
+		password=input("Password: ")
+		entry_df=pd.DataFrame({
+			'user':[username],
+			'pass':[password]
+		})
+		users_df=pd.concat([users_df,entry_df])
+		users_df.to_csv("users.csv",index=False)
+		print("Registration successful.")
+	return username
+
+
+	
 def UI(DHT):
 	print("-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
+	user=registration()
 	print("Begin by specifying number of nodes the P2P network should have intitially")
 	num_init = int(input('Enter number of nodes: '))
 
@@ -244,13 +274,16 @@ def UI(DHT):
 			DHT.insert_node(newNode)
 
 		elif option == 2 :
-			key = int(input("Enter node to be removed"))
+			key = int(input("Enter node to be removed: "))
 			DHT.remove_node()
-			print("Node removed")
+			print("Node removed!")
 
 		elif option == 3 :
 			key = int(input("Enter node to be used: "))
 			used_node = DHT.ring_list.search(key)
+			if used_node==None:
+				print("Node not found!")
+				continue
 			print("\nOptions:\n1.Search for data\n2.Insert Data\n")
 			choice = int(input("Enter choice: "))
 
