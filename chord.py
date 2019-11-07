@@ -1,4 +1,5 @@
 import random
+import pandas as pd
 
 class Node :
 	def __init__(self,key,address=None):
@@ -228,9 +229,15 @@ def menu():
 	option = int(input("Enter choice:"))
 	return option
 
+def registration():
+	print("Please enter details:\n")
+	username=input("Username:")
+	password=input("Password:")
+	
 def UI(DHT):
 	print("-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
+	user=registration()
 	print("Begin by specifying number of nodes the P2P network should have intitially")
 	num_init = int(input('Enter number of nodes: '))
 
