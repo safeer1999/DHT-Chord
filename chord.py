@@ -354,7 +354,7 @@ def editor(DHT,dumpfile):
 
 		elif option == 2 :
 			key = int(input("Enter node to be removed: "))
-			DHT.remove_node()
+			DHT.remove_node(key)
 			pickle.dump(DHT,dumpfile)
 			print("Node removed!")
 
@@ -411,7 +411,7 @@ def editor(DHT,dumpfile):
 				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
 				
-				print("File inserted at node: ",ins_node.key)
+				print("File inserted at node:",ins_node.key)
 				
 				users_df[filename] = [np.nan for i in range(users_df.shape[0])]
 				users_df.loc[users_df['user']==user,filename]=acc_contrl.private_key()
@@ -421,8 +421,8 @@ def editor(DHT,dumpfile):
 				
 
 
-				ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
-				print("File encrypted with public key", acc_contrl.public_key())
+				# ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
+				print("File encrypted with public key:", acc_contrl.public_key())
 				if len(users_df['user'].values)!=1:
 					permch=input("Do you wish to give permission to other users? (y/n): ")
 					if permch=='y' or permch=='Y':
