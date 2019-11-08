@@ -395,7 +395,7 @@ def editor(DHT,dumpfile):
 				
 
 
-				ins_node.data.append(DataFile(filename, content, pubkey, expo))
+				ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent(()), acc_contrl.public_key(), acc_contrl.exponent()))
 				pickle.dump(DHT,dumpfile)
 
 		elif option==5:
