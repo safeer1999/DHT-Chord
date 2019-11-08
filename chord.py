@@ -182,6 +182,9 @@ class Chord :
 
 		keys = succ.pred
 		succ.pred = []
+		data = succ.data
+		succ.data = []
+
 		if succ.key < node.key :
 			node,succ = succ,node
 
@@ -194,11 +197,25 @@ class Chord :
 			else :
 				node.pred.append(key)
 
+		while data != [] :
+			data_file = data.pop()
+
+			if self.hash_key(data_file.name) > node.key and self.hash_key(data_file.name) <= succ.key :
+				succ.data.append(data_file)
+
+			else :
+				node.data.append(data_file)
+
+
+
 	def update_pred_post_removal(self,node):
 		succ=node.next
 
 		while node.pred != []:
 			succ.pred.append(node.pred.pop())
+
+		while node.data != []:
+			succ.data.append(node.data.pop())
 
 
 
@@ -421,8 +438,8 @@ def editor(DHT,dumpfile):
 				
 
 
-				# ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
-				print("File encrypted with public key:", acc_contrl.public_key())
+				#ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
+				print("File encrypted with public key", acc_contrl.public_key())
 				if len(users_df['user'].values)!=1:
 					permch=input("Do you wish to give permission to other users? (y/n): ")
 					if permch=='y' or permch=='Y':
