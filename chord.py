@@ -7,6 +7,7 @@ import os.path
 
 users_df = pd.read_csv("users.csv", index_col=False)
 user = "user"
+curr_user = ''
 
 class Node :
 	def __init__(self,key,address=None):
@@ -108,13 +109,20 @@ class List:
 		  	print(temp.key,temp.pred,list(map(lambda x: x.key, temp.route_table)))
 
 	def disp_ring_data(self):
+		acc=RSA()
 		temp = self.head
 		print("------- Node", temp.key,"-------")
 		for entry in temp.data:
 			print("\t<---->")
 			print("FILE NAME:\n", entry.name)
 			print("PUBLIC KEY:\n", entry.pubkey)
-			print("CONTENT:\n", entry.content)
+			content=entry.content
+			if not users_df[users_df['user']==curr_user][entry.name].isna().values[0]:
+				print("Decrypting with private key...")
+				print("CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
+			else:
+				print("Unable to decrypt without private key.")
+				print("ENCRYPTED CONTENT:\n", entry.content)
 			print("\t<---->\n")
 
 		while(temp.next != self.head):
@@ -124,8 +132,14 @@ class List:
 				print("\t<---->")
 				print("FILE NAME:\n", entry.name)
 				print("PUBLIC KEY:\n", entry.pubkey)
-				print("CONTENT:\n", entry.content)
-				print("\t<---->")
+				content=entry.content
+				if not users_df[users_df['user']==curr_user][entry.name].isna().values[0]:
+					print("Decrypting with private key...")
+					print("CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
+				else:
+					print("Unable to decrypt without private key.")
+					print("ENCRYPTED CONTENT:\n", entry.content)
+				print("\t<---->\n")
 
 
 
@@ -268,12 +282,13 @@ def menu():
 
 def registration():
 	print("Please enter details:\n")
-	username=input("Username: ")
+	global curr_user
+	curr_user=input("Username: ")
 	global users_df
-	if username in list(users_df['user']):
-		print("Welcome back", username,"\n")
+	if curr_user in list(users_df['user']):
+		print("Welcome back", curr_user,"\n")
 		password=input("Password: ")
-		while password != str(users_df[users_df['user']==username]['pass'].values[0]):
+		while password != str(users_df[users_df['user']==curr_user]['pass'].values[0]):
 			print("Incorrect password, re-enter\n")
 			password=input("Password: ")
 		else:
@@ -282,13 +297,13 @@ def registration():
 		print("New user detected, register now")
 		password=input("Password: ")
 		entry_df=pd.DataFrame({
-			'user':[username],
+			'user':[curr_user],
 			'pass':[password]
 		})
-		users_df=pd.concat([users_df,entry_df])
+		users_df=pd.concat([users_df,entry_df],sort=True)
 		users_df.to_csv("users.csv",index=False)
 		print("Registration successful.")
-	return username
+	return curr_user
 	
 def viewer(DHT,dumpfile):
 	print()
@@ -310,6 +325,7 @@ def netUI(DHT,dumpfile):
 		if ch==1:
 			editor(DHT,dumpfile)
 		else:
+			pickle.dump(DHT,dumpfile)
 			dumpfile.close()
 			exit()
 def UI(DHT,loadflag,dumpfile):
@@ -401,6 +417,7 @@ def editor(DHT,dumpfile):
 		elif option==5:
 			netUI(DHT,dumpfile)
 		else:
+			pickle.dump(DHT,dumpfile)	
 			dumpfile.close()
 			exit()
 
