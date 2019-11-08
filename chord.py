@@ -4,6 +4,7 @@ import numpy as np
 from RSA import RSA
 import pickle
 import os.path
+import math
 
 users_df = pd.read_csv("users.csv", index_col=False)
 user = "user"
@@ -393,7 +394,9 @@ def editor(DHT,dumpfile):
 				for entry in node.data:
 					if search_file == entry.name:
 						print("Found file in node ",node.address)
-						if users_df.loc[users_df['user']==user,entry.name].values[0] == np.nan :
+						
+						print(users_df.loc[users_df['user']==user,entry.name].values[0] == np.nan)
+						if math.isnan(users_df.loc[users_df['user']==user,entry.name].values[0] )  :
 							print("no access")
 							break
 
