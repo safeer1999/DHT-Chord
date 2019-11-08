@@ -214,6 +214,9 @@ class Chord :
 		while node.pred != []:
 			succ.pred.append(node.pred.pop())
 
+		while node.data != []:
+			succ.data.append(node.data.pop())
+
 
 
 
