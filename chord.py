@@ -19,9 +19,11 @@ class Node :
 		
 
 class DataFile:
-	def __init__(self,name,content=''):
+	def __init__(self,name,content='',pubkey=0,expo=-1):
 		self.name=name
 		self.content=content
+		self.pubkey=pubkey
+		self.expo=expo
 
 class List:
 	def __init__(self,max_nodes):
