@@ -13,7 +13,12 @@ class Node :
 		self.next = None
 		self.route_table = []
 		self.data = []
+		
 
+class DataFile:
+	def __init__(self,name,content=''):
+		self.name=name
+		self.content=content
 
 class List:
 	def __init__(self,max_nodes):
@@ -97,6 +102,23 @@ class List:
 		  	temp = temp.next
 		  	print(temp.key,temp.pred,list(map(lambda x: x.key, temp.route_table)))
 
+	def disp_ring_data(self):
+		temp = self.head
+		print("------- Node", temp.key,"-------")
+		for entry in temp.data:
+			print("\t<---->")
+			print("File name:", entry.name)
+			print("Content:\n", entry.content)
+			print("\t<---->")
+
+		while(temp.next != self.head):
+			temp = temp.next
+			print("------- Node", temp.key,"-------")
+			for entry in temp.data:
+				print("\t<---->")
+				print("File name:", entry.name)
+				print("Content:\n", entry.content)
+				print("\t<---->")
 
 
 
@@ -261,10 +283,11 @@ def registration():
 		print("Registration successful.")
 	return username
 	
-def viewer(DHT):
+def viewer(DHT,dumpfile):
 	print()
-	DHT.ring_list.disp_ring()
+	DHT.ring_list.disp_ring_data()
 	print()
+	netUI(DHT,dumpfile)
 
 def netUI(DHT,dumpfile):
 	while(True):
@@ -272,15 +295,18 @@ def netUI(DHT,dumpfile):
 		print("------------------------VIEW MENU------------------------")
 		print("1.Edit/Define network.")
 		print("2.View network.")
+		print("3.Exit.")
 		print()
 		ch=int(input("Enter choice: "))
 		if ch==2:
-			viewer(DHT)
-		else:
+			viewer(DHT,dumpfile)
+		if ch==1:
 			editor(DHT,dumpfile)
-
+		else:
+			dumpfile.close()
+			exit()
 def UI(DHT,loadflag,dumpfile):
-	print("-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
+	print("\n-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
 	user=registration()
 	if loadflag:
@@ -322,20 +348,32 @@ def editor(DHT,dumpfile):
 				search_key = DHT.hash_key(search_file)
 
 				node = DHT.search(used_node,search_key)
-				if search_file in node.data :
-					print("Found file in node ",node.address)
+
+				for entry in node.data:
+					if search_file == entry.name:
+						print("Found file in node ",node.address)
 
 				else :
 					print("File not found")
 
 			elif choice == 2 :
 				filename = input("Enter filename: ")
+				print("Enter [multiline] content: ")
+				lines = []
+				while True:
+					line = input()
+					if line:
+						lines.append(line)
+					else:
+						break
+				content = '\n'.join(lines)
+				
 				ins_key = DHT.hash_key(filename)
 				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
-				ins_node.data.append(filename)
+				ins_node.data.append(DataFile(filename, content))
 				pickle.dump(DHT,dumpfile)
-				print("File inserted at node: ",ins_node.address)
+				print("File inserted at node: ",ins_node.key)
 
 		elif option==5:
 			netUI(DHT,dumpfile)
@@ -354,11 +392,14 @@ def editor(DHT,dumpfile):
 def main():
 	loadflag=False
 	if os.path.exists('DHT.obj'):
+		print("\nSave file detected.")
 		loadfile=open('DHT.obj','rb')
 		DHT=pickle.load(loadfile)
 		loadfile.close()
+		print("Data loaded!")
 		loadflag=True
 	else:
+		print("\nNo existing save file found.")
 		DHT = Chord()
 		dumpfile=open('DHT.obj','wb')
 		pickle.dump(DHT,dumpfile)
