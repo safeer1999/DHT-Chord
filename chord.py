@@ -283,9 +283,7 @@ def registration():
 		password=input("Password: ")
 		entry_df=pd.DataFrame({
 			'user':[username],
-			'pass':[password],
-			'files':[[]],
-			'keys' :[[]]
+			'pass':[password]
 		})
 		users_df=pd.concat([users_df,entry_df])
 		users_df.to_csv("users.csv",index=False)
@@ -387,13 +385,15 @@ def editor(DHT,dumpfile):
 				ins_node = DHT.search(used_node,ins_key)
 				
 				print("File inserted at node: ",ins_node.key)
-				print(users_df.loc[users_df['user']==user]['files'])
-				users_df[users_df['user']==user]['files'][0].append(filename)
-				pubkey=acc_contrl.public_key()
-				expo=acc_contrl.exponent()
-				users_df.loc[users_df['user']==user]['keys'][0].append((pubkey,acc_contrl.private_key(),expo))
-
+				
+				users_df[filename] = [np.nan for i in range(users_df.shape[0])]
+				users_df.loc[users_df['user']==user,filename]=acc_contrl.private_key()
 				users_df.to_csv("users.csv")
+				
+
+				users_df.to_csv("users.csv",index=False)
+				
+
 
 				ins_node.data.append(DataFile(filename, content, pubkey, expo))
 				pickle.dump(DHT,dumpfile)
