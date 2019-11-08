@@ -114,15 +114,15 @@ class List:
 		print("------- Node", temp.key,"-------")
 		for entry in temp.data:
 			print("\t<---->")
-			print("FILE NAME:\n", entry.name)
-			print("PUBLIC KEY:\n", entry.pubkey)
+			print(">>FILE NAME:\n", entry.name)
+			print(">>PUBLIC KEY:\n", entry.pubkey)
 			content=entry.content
 			if not users_df[users_df['user']==curr_user][entry.name].isna().values[0]:
 				print("Decrypting with private key...")
-				print("CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
+				print(">>CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
 			else:
 				print("Unable to decrypt without private key.")
-				print("ENCRYPTED CONTENT:\n", entry.content)
+				print(">>ENCRYPTED CONTENT:\n", entry.content)
 			print("\t<---->\n")
 
 		while(temp.next != self.head):
@@ -130,15 +130,15 @@ class List:
 			print("------- Node", temp.key,"-------")
 			for entry in temp.data:
 				print("\t<---->")
-				print("FILE NAME:\n", entry.name)
-				print("PUBLIC KEY:\n", entry.pubkey)
+				print(">>FILE NAME:\n", entry.name)
+				print(">>PUBLIC KEY:\n", entry.pubkey)
 				content=entry.content
 				if not users_df[users_df['user']==curr_user][entry.name].isna().values[0]:
 					print("Decrypting with private key...")
-					print("CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
+					print(">>CONTENT:\n", acc.decipher_text(content,int(users_df[users_df['user']==curr_user][entry.name].values[0]),entry.pubkey))
 				else:
 					print("Unable to decrypt without private key.")
-					print("ENCRYPTED CONTENT:\n", entry.content)
+					print(">>ENCRYPTED CONTENT:\n", entry.content)
 				print("\t<---->\n")
 
 
@@ -403,15 +403,30 @@ def editor(DHT,dumpfile):
 				
 				users_df[filename] = [np.nan for i in range(users_df.shape[0])]
 				users_df.loc[users_df['user']==user,filename]=acc_contrl.private_key()
-				users_df.to_csv("users.csv")
 				
 
-				users_df.to_csv("users.csv",index=False)
+				
+				# users_df.to_csv("users.csv",index=False)
+				# pickle.dump(DHT,dumpfile)
 				
 
 
 				ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
 				print("File encrypted with public key", acc_contrl.public_key())
+				if len(users_df['user'].values)!=1:
+					permch=input("Do you wish to give permission to other users? (y/n): ")
+					if permch=='y' or permch=='Y':
+						print('Other users:')
+						for name in list(users_df['user'].values):
+							if name != curr_user:
+								print(name)
+						select_user=input("Selection: ")
+						if select_user in list(users_df['user'].values):
+							users_df.loc[users_df['user']==select_user,filename]=acc_contrl.private_key()
+						else:
+							print("Invalid input")
+
+				users_df.to_csv("users.csv",index=False)
 				pickle.dump(DHT,dumpfile)
 
 		elif option==5:
