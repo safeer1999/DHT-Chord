@@ -298,12 +298,12 @@ def menu():
 	return option
 
 def registration():
-	print("Please enter details:\n")
+	print("Please enter details\n")
 	global curr_user
 	curr_user=input("Username: ")
 	global users_df
 	if curr_user in list(users_df['user']):
-		print("Welcome back", curr_user,"!\n")
+		print("Welcome back", curr_user,"\n")
 		password=input("Password: ")
 		while password != str(users_df[users_df['user']==curr_user]['pass'].values[0]):
 			print("Incorrect password, re-enter\n")
@@ -319,7 +319,7 @@ def registration():
 		})
 		users_df=pd.concat([users_df,entry_df],sort=True)
 		users_df.to_csv("users.csv",index=False)
-		print("Registration successful.")
+		print("Registration successful.\n")
 	return curr_user
 	
 def viewer(DHT,dumpfile):
