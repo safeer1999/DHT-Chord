@@ -1,7 +1,7 @@
 from decimal import Decimal 
 import sympy
 
-class RSA :
+class RSA:
 	def __init__(self):
 		self.exp=0
 		self.n=0

@@ -1,5 +1,7 @@
 import random
 import pandas as pd
+import pickle
+import os.path
 
 users_df = pd.read_csv("users.csv", index_col=False)
 
@@ -224,12 +226,15 @@ class Chord :
 
 
 def menu():
-	print("------------------------MENU-------------------------")
+	print()
+	print("------------------------EDIT MENU-------------------------")
 	print("1.Insert a node")
 	print("2.Remove a node")
 	print("3.Use a node")
 	print("4.Exit")
-	option = int(input("Enter choice:"))
+	print("5.Access View Menu")
+	print()
+	option = int(input("Enter choice: "))
 	return option
 
 def registration():
@@ -255,27 +260,52 @@ def registration():
 		users_df.to_csv("users.csv",index=False)
 		print("Registration successful.")
 	return username
-
-
 	
-def UI(DHT):
+def viewer(DHT):
+	print()
+	DHT.ring_list.disp_ring()
+	print()
+
+def netUI(DHT,dumpfile):
+	while(True):
+		print()
+		print("------------------------VIEW MENU------------------------")
+		print("1.Edit/Define network.")
+		print("2.View network.")
+		print()
+		ch=int(input("Enter choice: "))
+		if ch==2:
+			viewer(DHT)
+		else:
+			editor(DHT,dumpfile)
+
+def UI(DHT,loadflag,dumpfile):
 	print("-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
 	user=registration()
-	print("Begin by specifying number of nodes the P2P network should have intitially")
-	num_init = int(input('Enter number of nodes: '))
+	if loadflag:
+		netUI(DHT,dumpfile)
+	else:
+		print("Begin by specifying number of nodes the P2P network should have intitially")
+		num_init = int(input('Enter number of nodes: '))
 
-	DHT.init_ring(num_init)
+		DHT.init_ring(num_init)
+		pickle.dump(DHT,dumpfile)
+		editor(DHT,dumpfile)
+
+def editor(DHT,dumpfile):
 	while(True) :
 		option=menu()
 
 		if option == 1 :
 			newNode = DHT.create_node()
 			DHT.insert_node(newNode)
+			pickle.dump(DHT,dumpfile)
 
 		elif option == 2 :
 			key = int(input("Enter node to be removed: "))
 			DHT.remove_node()
+			pickle.dump(DHT,dumpfile)
 			print("Node removed!")
 
 		elif option == 3 :
@@ -304,10 +334,13 @@ def UI(DHT):
 				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
 				ins_node.data.append(filename)
+				pickle.dump(DHT,dumpfile)
 				print("File inserted at node: ",ins_node.address)
 
-
-		else :
+		elif option==5:
+			netUI(DHT,dumpfile)
+		else:
+			dumpfile.close()
 			exit()
 
 
@@ -319,8 +352,20 @@ def UI(DHT):
 
 
 def main():
-	DHT = Chord()
-	UI(DHT)
+	loadflag=False
+	if os.path.exists('DHT.obj'):
+		loadfile=open('DHT.obj','rb')
+		DHT=pickle.load(loadfile)
+		loadfile.close()
+		loadflag=True
+	else:
+		DHT = Chord()
+		dumpfile=open('DHT.obj','wb')
+		pickle.dump(DHT,dumpfile)
+		dumpfile.close()
+	dumpfile=open('DHT.obj','wb')
+	
+	UI(DHT,loadflag,dumpfile)
 	# DHT.init_ring(3)
 	# print()
 	# DHT.ring_list.disp_ring()
