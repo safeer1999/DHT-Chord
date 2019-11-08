@@ -286,7 +286,7 @@ def registration():
 	curr_user=input("Username: ")
 	global users_df
 	if curr_user in list(users_df['user']):
-		print("Welcome back", curr_user,"\n")
+		print("Welcome back", curr_user,"!\n")
 		password=input("Password: ")
 		while password != str(users_df[users_df['user']==curr_user]['pass'].values[0]):
 			print("Incorrect password, re-enter\n")
