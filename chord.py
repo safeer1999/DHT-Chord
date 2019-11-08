@@ -376,6 +376,18 @@ def editor(DHT,dumpfile):
 				for entry in node.data:
 					if search_file == entry.name:
 						print("Found file in node ",node.address)
+						if users_df.loc[users_df['user']==user,entry.name].values[0] == np.nan :
+							print("no access")
+							break
+
+						else :
+							dec = RSA()
+							content_copy = entry.content
+							print(users_df.loc[users_df['user']==user,entry.name].values[0])
+							print(entry.pubkey)
+							content = entry.content
+							print(dec.decipher_text(content_copy,int(users_df.loc[users_df['user']==user,entry.name].values[0]),entry.pubkey))
+							break
 
 				else :
 					print("File not found")
@@ -394,7 +406,7 @@ def editor(DHT,dumpfile):
 					else:
 						break
 				content = '\n'.join(lines)
-				
+				content_copy=content
 				ins_key = DHT.hash_key(filename)
 				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
@@ -404,9 +416,7 @@ def editor(DHT,dumpfile):
 				users_df[filename] = [np.nan for i in range(users_df.shape[0])]
 				users_df.loc[users_df['user']==user,filename]=acc_contrl.private_key()
 				
-
-				
-				# users_df.to_csv("users.csv",index=False)
+				ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content_copy,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
 				# pickle.dump(DHT,dumpfile)
 				
 
@@ -428,6 +438,7 @@ def editor(DHT,dumpfile):
 
 				users_df.to_csv("users.csv",index=False)
 				pickle.dump(DHT,dumpfile)
+
 
 		elif option==5:
 			netUI(DHT,dumpfile)
