@@ -13,6 +13,9 @@ class RSA:
 	def private_key(self) :
 		return self.d
 
+	def exponent(self):
+		return self.exp
+
 
 	def gcd(self,a,b): 
 		if b==0: 
@@ -41,37 +44,36 @@ class RSA:
 				break
 
 
-	def encrypt(self,no):
+	def encrypt(self,no,pu_key,exp):
 		ctt = Decimal(0) 
-		ctt =pow(no,self.exp) 
-		ct = ctt % self.n
+		ctt =pow(no,exp) 
+		ct = ctt % pu_key
 		return ct
 
-	def decrypt(self,enc):
+	def decrypt(self,enc,pr_key,pu_key):
 		dtt = Decimal(0) 
-		dtt = pow(enc,self.d) 
-		dt = dtt % self.n 
+		dtt = pow(enc,pr_key) 
+		dt = dtt % pu_key 
 
-		#print('n = '+str(n)+' e = '+str(e)+' t = '+str(t)+' d = '+str(d)+' cipher text = '+str(ct)+' decrypted text = '+str(dt)) 
 		return dt
 
-	def cipher_text(self,text) :
+	def cipher_text(self,text,pu_key,exp) :
 
 		cipher = str("")
 		for i in text :
-			enc_char =self.encrypt(ord(i))
+			enc_char =self.encrypt(ord(i),pu_key,exp)
 			cipher += str(enc_char)
 			cipher+= ','
 
 		return cipher[:-1]
 
-	def decipher_text(self,text):
+	def decipher_text(self,text,pr_key,pu_key):
 		
 		text_num = list(map(int,text.split(',')))
 		deciphered = str("")
 
 		for i in text_num:
-			deciphered+= chr(self.decrypt(i))
+			deciphered+= chr(self.decrypt(i,pr_key,pu_key))
 
 		return deciphered
 
@@ -81,7 +83,7 @@ def main():
 
 	access = RSA()
 	access.generate()
-	print("public key:",access.public_key(),"private key:",access.private_key(),"encrypted:",access.cipher_text(no),"decrypted:",access.decipher_text(access.cipher_text(no)))
+	print("public key:",access.public_key(),"private key:",access.private_key(),"encrypted:",access.cipher_text(no,access.public_key(),access.exponent()),"decrypted:",access.decipher_text(access.cipher_text(no,access.public_key(),access.exponent()),access.private_key(),access.public_key()))
 
 
 if __name__ == '__main__':

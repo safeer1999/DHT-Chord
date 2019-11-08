@@ -1,9 +1,12 @@
 import random
 import pandas as pd
+import numpy as np
+from RSA import RSA
 import pickle
 import os.path
 
 users_df = pd.read_csv("users.csv", index_col=False)
+user = "user"
 
 class Node :
 	def __init__(self,key,address=None):
@@ -276,7 +279,9 @@ def registration():
 		password=input("Password: ")
 		entry_df=pd.DataFrame({
 			'user':[username],
-			'pass':[password]
+			'pass':[password],
+			'files':[[]],
+			'keys' :[[]]
 		})
 		users_df=pd.concat([users_df,entry_df])
 		users_df.to_csv("users.csv",index=False)
@@ -306,8 +311,10 @@ def netUI(DHT,dumpfile):
 			dumpfile.close()
 			exit()
 def UI(DHT,loadflag,dumpfile):
+	inserted_files = []
 	print("\n-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
+	global user
 	user=registration()
 	if loadflag:
 		netUI(DHT,dumpfile)
@@ -357,6 +364,9 @@ def editor(DHT,dumpfile):
 					print("File not found")
 
 			elif choice == 2 :
+				acc_contrl = RSA()
+				acc_contrl.generate()
+
 				filename = input("Enter filename: ")
 				print("Enter [multiline] content: ")
 				lines = []
@@ -374,6 +384,11 @@ def editor(DHT,dumpfile):
 				ins_node.data.append(DataFile(filename, content))
 				pickle.dump(DHT,dumpfile)
 				print("File inserted at node: ",ins_node.key)
+				print(users_df.loc[users_df['user']==user]['files'])
+				users_df[users_df['user']==user]['files'][0].append(filename)
+				users_df.loc[users_df['user']==user]['keys'][0].append((acc_contrl.public_key(),acc_contrl.private_key(),acc_contrl.exponent()))
+
+				users_df.to_csv("users.csv")
 
 		elif option==5:
 			netUI(DHT,dumpfile)
