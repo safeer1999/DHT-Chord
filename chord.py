@@ -112,7 +112,8 @@ class List:
 		print("------- Node", temp.key,"-------")
 		for entry in temp.data:
 			print("\t<---->")
-			print("File name:", entry.name)
+			print("File name:\n", entry.name)
+			print("Public key:\n", entry.pubkey)
 			print("Content:\n", entry.content)
 			print("\t<---->")
 
@@ -121,7 +122,8 @@ class List:
 			print("------- Node", temp.key,"-------")
 			for entry in temp.data:
 				print("\t<---->")
-				print("File name:", entry.name)
+				print("File name:\n", entry.name)
+				print("Public key:\n", entry.pubkey)
 				print("Content:\n", entry.content)
 				print("\t<---->")
 
@@ -383,14 +385,18 @@ def editor(DHT,dumpfile):
 				ins_key = DHT.hash_key(filename)
 				print("File_key",ins_key)
 				ins_node = DHT.search(used_node,ins_key)
-				ins_node.data.append(DataFile(filename, content))
-				pickle.dump(DHT,dumpfile)
+				
 				print("File inserted at node: ",ins_node.key)
 				print(users_df.loc[users_df['user']==user]['files'])
 				users_df[users_df['user']==user]['files'][0].append(filename)
-				users_df.loc[users_df['user']==user]['keys'][0].append((acc_contrl.public_key(),acc_contrl.private_key(),acc_contrl.exponent()))
+				pubkey=acc_contrl.public_key()
+				expo=acc_contrl.exponent()
+				users_df.loc[users_df['user']==user]['keys'][0].append((pubkey,acc_contrl.private_key(),expo))
 
 				users_df.to_csv("users.csv")
+
+				ins_node.data.append(DataFile(filename, content, pubkey, expo))
+				pickle.dump(DHT,dumpfile)
 
 		elif option==5:
 			netUI(DHT,dumpfile)
