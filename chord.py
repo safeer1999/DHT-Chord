@@ -112,19 +112,19 @@ class List:
 		print("------- Node", temp.key,"-------")
 		for entry in temp.data:
 			print("\t<---->")
-			print("File name:\n", entry.name)
-			print("Public key:\n", entry.pubkey)
-			print("Content:\n", entry.content)
-			print("\t<---->")
+			print("FILE NAME:\n", entry.name)
+			print("PUBLIC KEY:\n", entry.pubkey)
+			print("CONTENT:\n", entry.content)
+			print("\t<---->\n")
 
 		while(temp.next != self.head):
 			temp = temp.next
 			print("------- Node", temp.key,"-------")
 			for entry in temp.data:
 				print("\t<---->")
-				print("File name:\n", entry.name)
-				print("Public key:\n", entry.pubkey)
-				print("Content:\n", entry.content)
+				print("FILE NAME:\n", entry.name)
+				print("PUBLIC KEY:\n", entry.pubkey)
+				print("CONTENT:\n", entry.content)
 				print("\t<---->")
 
 
@@ -300,9 +300,9 @@ def netUI(DHT,dumpfile):
 	while(True):
 		print()
 		print("------------------------VIEW MENU------------------------")
-		print("1.Edit/Define network.")
-		print("2.View network.")
-		print("3.Exit.")
+		print("1.Edit/Define network")
+		print("2.View network")
+		print("3.Exit")
 		print()
 		ch=int(input("Enter choice: "))
 		if ch==2:
@@ -313,7 +313,6 @@ def netUI(DHT,dumpfile):
 			dumpfile.close()
 			exit()
 def UI(DHT,loadflag,dumpfile):
-	inserted_files = []
 	print("\n-----------------------------------------DISTRIBUTED HASH TABLE-CHORD------------------------------------")
 	print()
 	global user
@@ -396,6 +395,7 @@ def editor(DHT,dumpfile):
 
 
 				ins_node.data.append(DataFile(filename, acc_contrl.cipher_text(content,acc_contrl.public_key(),acc_contrl.exponent()), acc_contrl.public_key(), acc_contrl.exponent()))
+				print("File encrypted with public key", acc_contrl.public_key())
 				pickle.dump(DHT,dumpfile)
 
 		elif option==5:
