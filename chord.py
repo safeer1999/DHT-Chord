@@ -397,7 +397,7 @@ def editor(DHT,dumpfile):
 							print("no access")
 							break
 
-						else :
+						else:
 							dec = RSA()
 							content_copy = entry.content
 							print(users_df.loc[users_df['user']==user,entry.name].values[0])
